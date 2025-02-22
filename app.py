@@ -1,9 +1,8 @@
-from flask import Flask
-from config import db, migrate
+from flask import Flask, jsonify
 from dotenv import load_dotenv
 from flask_cors import CORS
 from flasgger import Swagger
-import os
+import random
 
 # Cargar variables de entorno
 load_dotenv()
@@ -12,24 +11,32 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-# Configuración de la base de datos
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/examen'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
+# Configuración de Swagger
 app.config['SWAGGER'] = {
     'title': 'Mi API Flask',
     'uiversion': 3
 }
-
-# Inicializar extensiones
-db.init_app(app)
-migrate.init_app(app, db)
-
 swagger = Swagger(app)
 
-# Registrar rutas
-from routes.user import user_bp
-app.register_blueprint(user_bp, url_prefix='/users')
+# Datos ficticios simulando usuarios
+users = [
+    {"id": 1, "nombre": "Alice", "edad": 25},
+    {"id": 2, "nombre": "Bob", "edad": 30},
+    {"id": 3, "nombre": "Charlie", "edad": 35},
+    {"id": 4, "nombre": "David", "edad": 40},
+    {"id": 5, "nombre": "Eva", "edad": 45},
+    {"id": 6, "nombre": "Frank", "edad": 50},
+    {"id": 7, "nombre": "Grace", "edad": 55},
+    {"id": 8, "nombre": "Hank", "edad": 60},
+    {"id": 9, "nombre": "Ivy", "edad": 65},
+    {"id": 10, "nombre": "Jack", "edad": 70},
+]
+
+# Ruta para obtener 5 registros aleatorios
+@app.route('/users', methods=['GET'])
+def get_random_users():
+    sample_users = random.sample(users, 5)  # Selecciona 5 registros aleatorios
+    return jsonify(sample_users)
 
 if __name__ == '__main__':
     app.run(debug=True)
